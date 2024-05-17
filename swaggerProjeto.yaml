@@ -1,0 +1,328 @@
+swagger: "2.0"
+info:
+  description: "API para gerenciar o processo de montagem de drones."
+  version: "1.0.0"
+  title: "Gestão de Montagem de Drones API"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "seuemail@exemplo.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost:3000"
+basePath: "/api"
+tags:
+- name: "user"
+  description: "Operações sobre usuários"
+- name: "drone"
+  description: "Gestão de montagens de drones"
+schemes:
+- "http"
+paths:
+  /users/register:
+    post:
+      tags:
+      - "user"
+      summary: "Registrar um novo usuário"
+      description: ""
+      operationId: "registerUser"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Objeto do usuário que precisa ser registrado"
+        required: true
+        schema:
+          $ref: "#/definitions/UserRegister"
+      responses:
+        "201":
+          description: "Usuário registrado com sucesso"
+        "400":
+          description: "Usuário já existe"
+        "500":
+          description: "Erro interno do servidor"
+
+  /users/login:
+    post:
+      tags:
+      - "user"
+      summary: "Logar um usuário"
+      description: ""
+      operationId: "loginUser"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Objeto do usuário para login"
+        required: true
+        schema:
+          $ref: "#/definitions/UserLogin"
+      responses:
+        "200":
+          description: "Login bem-sucedido"
+          schema:
+            type: "object"
+            properties:
+              token:
+                type: "string"
+                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        "400":
+          description: "Credenciais inválidas"
+        "500":
+          description: "Erro interno do servidor"
+
+  /users:
+    get:
+      tags:
+      - "user"
+      summary: "Listar todos os usuários"
+      description: ""
+      operationId: "listUsers"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Lista de usuários"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
+        "500":
+          description: "Erro interno do servidor"
+
+  /users/{id}:
+    delete:
+      tags:
+      - "user"
+      summary: "Apagar um usuário"
+      description: ""
+      operationId: "deleteUser"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID do usuário a ser deletado"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "Usuário apagado com sucesso"
+        "404":
+          description: "Usuário não encontrado"
+        "500":
+          description: "Erro interno do servidor"
+
+  /users/me:
+    get:
+      tags:
+      - "user"
+      summary: "Obter dados do usuário autenticado"
+      description: ""
+      operationId: "getUserData"
+      produces:
+      - "application/json"
+      security:
+      - bearerAuth: []
+      responses:
+        "200":
+          description: "Dados do usuário"
+          schema:
+            $ref: "#/definitions/User"
+        "401":
+          description: "Token inválido ou não fornecido"
+        "500":
+          description: "Erro interno do servidor"
+
+  /drones:
+    post:
+      tags:
+      - "drone"
+      summary: "Criar uma nova montagem de drone"
+      description: ""
+      operationId: "createDrone"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Objeto de montagem de drone que precisa ser criado"
+        required: true
+        schema:
+          $ref: "#/definitions/Drone"
+      responses:
+        "201":
+          description: "Montagem de drone criada com sucesso"
+        "500":
+          description: "Erro interno do servidor"
+
+    get:
+      tags:
+      - "drone"
+      summary: "Listar todas as montagens de drones"
+      description: ""
+      operationId: "listDrones"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Lista de montagens de drones"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Drone"
+        "500":
+          description: "Erro interno do servidor"
+
+  /drones/{id}:
+    get:
+      tags:
+      - "drone"
+      summary: "Obter detalhes de uma montagem de drone"
+      description: ""
+      operationId: "getDroneById"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID da montagem de drone"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "Detalhes da montagem de drone"
+          schema:
+            $ref: "#/definitions/Drone"
+        "404":
+          description: "Montagem de drone não encontrada"
+        "500":
+          description: "Erro interno do servidor"
+
+    patch:
+      tags:
+      - "drone"
+      summary: "Atualizar uma montagem de drone"
+      description: ""
+      operationId: "updateDrone"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID da montagem de drone"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Objeto de montagem de drone que precisa ser atualizado"
+        required: true
+        schema:
+          $ref: "#/definitions/Drone"
+      responses:
+        "200":
+          description: "Montagem de drone atualizada com sucesso"
+        "404":
+          description: "Montagem de drone não encontrada"
+        "500":
+          description: "Erro interno do servidor"
+
+    delete:
+      tags:
+      - "drone"
+      summary: "Apagar uma montagem de drone"
+      description: ""
+      operationId: "deleteDrone"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID da montagem de drone"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "Montagem de drone apagada com sucesso"
+        "404":
+          description: "Montagem de drone não encontrada"
+        "500":
+          description: "Erro interno do servidor"
+
+securityDefinitions:
+  bearerAuth:
+    type: "apiKey"
+    name: "Authorization"
+    in: "header"
+
+definitions:
+  User:
+    type: "object"
+    properties:
+      _id:
+        type: "string"
+        example: "60f6c4f95d5c0a3a10d4e2b7"
+      email:
+        type: "string"
+        example: "usuario@teste.com"
+      password:
+        type: "string"
+        example: "$2a$10$EIXIj7FjfO2s3E.g.pUj8O.aFtI3jGnG/FTKT1WQlE4GZ.e4G9A0O"
+
+  UserRegister:
+    type: "object"
+    properties:
+      email:
+        type: "string"
+        example: "usuario@teste.com"
+      password:
+        type: "string"
+        example: "senha123"
+
+  UserLogin:
+    type: "object"
+    properties:
+      email:
+        type: "string"
+        example: "usuario@teste.com"
+      password:
+        type: "string"
+        example: "senha123"
+
+  Drone:
+    type: "object"
+    properties:
+      _id:
+        type: "string"
+        example: "60f6c4f95d5c0a3a10d4e2b7"
+      droneModelo:
+        type: "string"
+        example: "Drone3000"
+      componentes:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            nomeComponente:
+              type: "string"
+              example: "Motor"
+            quantidade:
+              type: "integer"
+              example: 4
+      dataMontagem:
+        type: "string"
+        format: "date"
+        example: "2021-12-01"
+      usuarioResponsavel:
+        type: "string"
+        example: "60f6c4f95d5c0a3a10d4e2b7"
