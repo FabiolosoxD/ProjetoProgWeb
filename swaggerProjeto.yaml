@@ -259,6 +259,36 @@ paths:
         "500":
           description: "Erro interno do servidor"
 
+  /drones/{id}/components/{componentIndex}:
+    get:
+      tags:
+      - "drone"
+      summary: "Obter montagem de drone a partir de uma peça específica"
+      description: "Retorna a montagem de um drone a partir de um índice de peça específico"
+      operationId: "getDroneFromComponent"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID da montagem de drone"
+        required: true
+        type: "string"
+      - name: "componentIndex"
+        in: "path"
+        description: "Índice da peça a partir da qual retornar a montagem"
+        required: true
+        type: "integer"
+      responses:
+        "200":
+          description: "Detalhes da montagem de drone a partir da peça especificada"
+          schema:
+            $ref: "#/definitions/DroneFromComponent"
+        "404":
+          description: "Montagem de drone ou peça não encontrada"
+        "500":
+          description: "Erro interno do servidor"
+
 securityDefinitions:
   bearerAuth:
     type: "apiKey"
@@ -300,6 +330,34 @@ definitions:
         example: "senha123"
 
   Drone:
+    type: "object"
+    properties:
+      _id:
+        type: "string"
+        example: "60f6c4f95d5c0a3a10d4e2b7"
+      droneModelo:
+        type: "string"
+        example: "Drone3000"
+      componentes:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            nomeComponente:
+              type: "string"
+              example: "Motor"
+            quantidade:
+              type: "integer"
+              example: 4
+      dataMontagem:
+        type: "string"
+        format: "date"
+        example: "2021-12-01"
+      usuarioResponsavel:
+        type: "string"
+        example: "60f6c4f95d5c0a3a10d4e2b7"
+
+  DroneFromComponent:
     type: "object"
     properties:
       _id:
