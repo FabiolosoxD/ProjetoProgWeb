@@ -74,16 +74,7 @@ router.post('/login', async (req, res) => {
     }
   });
 
-// Endpoints de teste para apagar mais tarde 
-router.get('/', async (req, res) => {
-    try {
-      const users = await User.find({});
-      res.json(users);
-    } catch (error) {
-      console.error('Erro ao listar usuários:', error);
-      res.status(500).send('Erro interno do servidor');
-    }
-});
+
 // Endpoint para deletar um usuário
 router.delete('/:id', async (req, res) => {
     try {
@@ -100,5 +91,15 @@ router.delete('/:id', async (req, res) => {
       res.status(500).send('Erro interno do servidor');
     }
   });  
+// Endpoints de teste para apagar mais tarde 
+router.get('/', async (req, res) => {
+    try {
+      const users = await User.find({});
+      res.json(users);
+    } catch (error) {
+      console.error('Erro ao listar usuários:', error);
+      res.status(500).send('Erro interno do servidor');
+    }
+});
 
 module.exports = router;
