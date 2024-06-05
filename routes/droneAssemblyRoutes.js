@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const DroneAssembly = require('../Models/droneAssembly');
 const Part = require('../Models/part');
+const auth = require('../middleware/auth');
 
 // Adicionar uma nova montagem de drone
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   try {
     const { droneModel, parts, assemblyDate, userId } = req.body;
     const partsWithNames = await Promise.all(parts.map(async part => {
@@ -31,7 +32,7 @@ router.post('/', async (req, res) => {
 });
 
 // Listar todas as montagens de drones
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
   try {
     const droneAssemblies = await DroneAssembly.find().populate('parts.partId');
     res.status(200).json(droneAssemblies);
@@ -41,7 +42,7 @@ router.get('/', async (req, res) => {
 });
 
 // Consultar montagens de drones por usuário
-router.get('/user/:userId', async (req, res) => {
+router.get('/user/:userId', auth, async (req, res) => {
   try {
     const { userId } = req.params;
     const droneAssemblies = await DroneAssembly.find({ userId }).populate('parts.partId');
@@ -52,7 +53,7 @@ router.get('/user/:userId', async (req, res) => {
 });
 
 // Atualizar uma montagem de drone
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', auth, async (req, res) => {
   try {
     const { id } = req.params;
     const { droneModel, parts, assemblyDate } = req.body;
@@ -81,7 +82,7 @@ router.patch('/:id', async (req, res) => {
 });
 
 // Deletar uma montagem de drone
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
   try {
     const { id } = req.params;
     const droneAssembly = await DroneAssembly.findByIdAndDelete(id);
@@ -89,6 +90,25 @@ router.delete('/:id', async (req, res) => {
       return res.status(404).json({ msg: 'Montagem de drone não encontrada' });
     }
     res.status(200).json({ msg: 'Montagem de drone apagada com sucesso' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Visualização de Estatísticas
+router.get('/stats', auth, async (req, res) => {
+  try {
+    const totalAssemblies = await DroneAssembly.countDocuments();
+    const partStats = await DroneAssembly.aggregate([
+      { $unwind: "$parts" },
+      { $group: { _id: "$parts.partName", total: { $sum: "$parts.quantity" } } },
+      { $sort: { total: -1 } }
+    ]);
+
+    res.status(200).json({
+      totalAssemblies,
+      partStats
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
