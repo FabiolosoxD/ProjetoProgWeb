@@ -3,8 +3,21 @@ const bcrypt = require('bcryptjs');
 
 // Definição do Esquema do Usuário
 const userSchema = new mongoose.Schema({
-  email: {type: String,required: true,unique: true,trim: true,lowercase: true},
-  password: {type: String,required: true}
+  email: {
+    type: String,
+    required: [true, 'Email é obrigatório'],
+    unique: true,
+    trim: true,
+    lowercase: true,
+    match: [/.+\@.+\..+/, 'Por favor, insira um email válido']
+  },
+  password: {
+    type: String,
+    required: [true, 'Senha é obrigatória'],
+    minlength: [6, 'A senha deve ter pelo menos 6 caracteres']
+  }
+}, {
+  timestamps: true // Adiciona createdAt e updatedAt automaticamente
 });
 
 // Middleware do Mongoose para hash de senha antes de salvar o documento
