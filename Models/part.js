@@ -12,7 +12,12 @@ const partSchema = new mongoose.Schema({
   quantity: {
     type: Number,
     required: [true, 'Quantidade é obrigatória'],
-    min: [1, 'A quantidade deve ser pelo menos 1']
+    min: [0, 'A quantidade deve ser pelo menos 0']
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   }
 }, {
   timestamps: true
