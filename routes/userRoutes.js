@@ -4,10 +4,10 @@ const User = require('../Models/user');
 const jwt = require('jsonwebtoken');
 const auth = require('../middleware/auth');
 
-// Rota protegida para obter dados do usuário
+// Rota protegida para obter dados do user
 router.get('/me', auth, async (req, res) => {
   try {
-    // Usar o ID do usuário obtido do token JWT para buscar o usuário no banco de dados
+    // Usar o ID do user obtido do token JWT para buscar o user no banco de dados
     const user = await User.findById(req.user.id).select('-password');
     res.json(user);
   } catch (error) {
@@ -15,7 +15,7 @@ router.get('/me', auth, async (req, res) => {
     res.status(500).send('Server error');
   }
 });
-// Endpoint para registro de usuários
+// Endpoint para registro de users
 router.post('/register', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -33,7 +33,7 @@ router.post('/register', async (req, res) => {
     res.status(201).send('User registered');
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -70,10 +70,9 @@ router.post('/login', async (req, res) => {
       );
     } catch (err) {
       console.error(err.message);
-      res.status(500).send('Server error');
+      res.status(500).json({ error: err.message });
     }
   });
-
 
 // Endpoint para deletar um usuário
 router.delete('/:id', async (req, res) => {
@@ -82,24 +81,25 @@ router.delete('/:id', async (req, res) => {
       const user = await User.findByIdAndDelete(id);
   
       if (!user) {
-        return res.status(404).send('Usuário não encontrado');
+        return res.status(404).send('User não encontrado');
       }
   
-      res.send('Usuário deletado com sucesso');
+      res.send('User apagado com sucesso');
     } catch (error) {
-      console.error('Erro ao deletar usuário:', error);
-      res.status(500).send('Erro interno do servidor');
+      console.error('Erro ao apagar user:', error);
+      res.status(500).json({ error: error.message });
     }
   });  
-// Endpoints de teste para apagar mais tarde 
-router.get('/', async (req, res) => {
-    try {
-      const users = await User.find({});
-      res.json(users);
-    } catch (error) {
-      console.error('Erro ao listar usuários:', error);
-      res.status(500).send('Erro interno do servidor');
-    }
+
+// Endpoint para listar todos os usuários
+router.get('/all', async (req, res) => {
+  try {
+    const users = await User.find().select('-password');
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
+
 
 module.exports = router;
